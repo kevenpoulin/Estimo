@@ -1,0 +1,1008 @@
+<title>Estimo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Concept : cahier quadrillé. Papier à carreaux, encre marine, surligneur jaune. Le surligneur est la seule note vive. */
+:root {
+  --paper: #F2F5F9;
+  --grid: #DCE4EE;
+  --card: #FFFFFF;
+  --ink: #13203A;
+  --ink-soft: #52607A;
+  --edge: #13203A;
+  --mark: #FFD43B;
+  --mark-ink: #13203A;
+  --hl: #FFE680;
+  --pen: #2455D6;
+  --good: #17805A;
+  --good-bg: #DDF3E8;
+  --warn: #9A5B00;
+  --warn-bg: #FFF0D2;
+  --bad: #C42B3B;
+  --bad-bg: #FCE0E3;
+  --hatch: rgba(19, 32, 58, 0.22);
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0D1627; --grid: #182640; --card: #14213A; --ink: #E9EFFA; --ink-soft: #9FB0CD;
+    --edge: #6A82B0; --mark: #FFD43B; --mark-ink: #13203A; --hl: #5C4B0B; --pen: #8AA9FF;
+    --good: #4FCB92; --good-bg: #12372B; --warn: #F2B04A; --warn-bg: #3A2D10;
+    --bad: #FF7A88; --bad-bg: #40181E; --hatch: rgba(233, 239, 250, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0D1627; --grid: #182640; --card: #14213A; --ink: #E9EFFA; --ink-soft: #9FB0CD;
+  --edge: #6A82B0; --mark: #FFD43B; --mark-ink: #13203A; --hl: #5C4B0B; --pen: #8AA9FF;
+  --good: #4FCB92; --good-bg: #12372B; --warn: #F2B04A; --warn-bg: #3A2D10;
+  --bad: #FF7A88; --bad-bg: #40181E; --hatch: rgba(233, 239, 250, 0.28);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--ink);
+  font: 400 17px/1.5 var(--font-display);
+  min-height: 100%;
+}
+.shell {
+  max-width: 680px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 20px 48px;
+  display: grid;
+  gap: 16px;
+}
+h1, h2, h3, p { margin: 0; }
+h2 { font: 700 20px/1.2 var(--font-display); text-wrap: balance; }
+.eyebrow { font: 600 12px/1.2 var(--font-display); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* cartes et boutons */
+.card {
+  background: var(--card);
+  border: 2px solid var(--edge);
+  border-radius: 6px;
+  padding: 18px;
+  box-shadow: 3px 3px 0 var(--edge);
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.btn {
+  font: 700 17px/1.2 var(--font-display);
+  min-height: 50px;
+  padding: 12px 20px;
+  border: 2px solid var(--edge);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--edge);
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--edge); }
+.btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--edge); }
+.btn.primary { background: var(--mark); color: var(--mark-ink); }
+.btn.big { font-size: 19px; min-height: 56px; }
+.btn.ghost { box-shadow: none; border-style: dashed; }
+:focus-visible { outline: 3px solid var(--pen); outline-offset: 3px; }
+
+/* accueil */
+.hero { display: grid; gap: 10px; padding-block: 8px 4px; }
+.brand { font: 800 clamp(56px, 16vw, 88px)/0.95 var(--font-display); letter-spacing: -0.03em; font-variation-settings: 'opsz' 96; }
+.brand .hl { background: linear-gradient(transparent 58%, var(--mark) 58% 92%, transparent 92%); padding-inline: 0.04em; }
+.lede { font-size: 19px; max-width: 34em; text-wrap: pretty; }
+.plan { display: grid; gap: 8px; }
+.plan-row { display: grid; grid-template-columns: 9.5em 1fr; gap: 4px 12px; align-items: baseline; padding-block: 8px; border-top: 1px dashed var(--edge); }
+.plan-row:first-child { border-top: 0; padding-top: 0; }
+.plan-row .tag { font-weight: 700; }
+.plan-row .meta { grid-column: 2; color: var(--ink-soft); font-size: 15px; }
+.rules { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.rules li { padding-left: 22px; position: relative; text-wrap: pretty; }
+.rules li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 10px; height: 10px; background: var(--mark); border: 2px solid var(--edge); border-radius: 2px; }
+.field { display: grid; gap: 6px; }
+.field label { font-weight: 600; }
+.field input {
+  font: 500 18px var(--font-display); padding: 12px 14px; min-height: 50px;
+  border: 2px solid var(--edge); border-radius: 6px; background: var(--paper); color: var(--ink); width: 100%;
+}
+.best { font: 500 15px var(--font-mono); color: var(--ink-soft); }
+
+/* barre du haut */
+.top { display: grid; gap: 10px; }
+.top-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.logo { font: 800 22px var(--font-display); letter-spacing: -0.02em; }
+.xp { font: 500 26px/1 var(--font-mono); font-variant-numeric: tabular-nums; display: inline-block; }
+.xp small { font-size: 13px; letter-spacing: 0.08em; color: var(--ink-soft); }
+.xp.pop { animation: pop 0.5s ease-out; }
+@keyframes pop { 0% { transform: scale(1); } 35% { transform: scale(1.22); color: var(--good); } 100% { transform: scale(1); } }
+.pips { display: flex; gap: 3px; }
+.pip { flex: 1; height: 12px; border: 2px solid var(--edge); border-radius: 3px; background-color: var(--card); }
+.pip:nth-child(10) { margin-left: 9px; }
+.pip.timed { background-image: repeating-linear-gradient(135deg, transparent 0 3px, var(--hatch) 3px 5px); }
+.pip.cur { background-color: var(--mark); }
+.pip.good { background-color: var(--good); }
+.pip.warn { background-color: #E8A317; }
+.pip.bad { background-color: var(--bad); }
+
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.chip { font: 700 14px/1 var(--font-display); padding: 7px 10px; border: 2px solid var(--edge); border-radius: 4px; background: var(--card); }
+.chip.timed { background: var(--mark); color: var(--mark-ink); }
+.count { color: var(--ink-soft); font-size: 15px; }
+
+/* chrono */
+.timer { display: flex; align-items: center; gap: 12px; }
+.timer .bar { flex: 1; height: 14px; border: 2px solid var(--edge); border-radius: 7px; background: var(--card); overflow: hidden; }
+.timer .fill { height: 100%; width: 100%; background: var(--pen); }
+.timer.low .fill { background: var(--bad); }
+.timer .secs { font: 500 22px/1 var(--font-mono); min-width: 3.4ch; text-align: right; font-variant-numeric: tabular-nums; }
+.timer.low .secs { color: var(--bad); }
+
+/* question */
+.q .expr { font: 500 clamp(30px, 8.4vw, 52px)/1.12 var(--font-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.q .ctx { font-size: clamp(19px, 4.6vw, 22px); line-height: 1.5; text-wrap: pretty; }
+b.num { font-family: var(--font-mono); font-weight: 500; background: linear-gradient(transparent 55%, var(--hl) 55%); padding-inline: 2px; white-space: nowrap; }
+.ans { display: grid; gap: 16px; }
+
+/* choisir */
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.opt {
+  position: relative; min-height: 84px; padding: 20px 10px 12px;
+  font: 500 clamp(22px, 6vw, 30px)/1 var(--font-mono); font-variant-numeric: tabular-nums;
+  background: var(--card); color: var(--ink); border: 2px solid var(--edge); border-radius: 6px; cursor: pointer;
+  box-shadow: 3px 3px 0 var(--edge);
+}
+.opt .k { position: absolute; top: 6px; left: 9px; font: 500 12px var(--font-mono); color: var(--ink-soft); }
+.opt:hover { background: var(--hl); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--edge); }
+.opt:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--edge); }
+.hint { color: var(--ink-soft); font-size: 15px; }
+
+/* curseurs */
+.readout { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; }
+.readout .lab { color: var(--ink-soft); font-size: 15px; }
+.readout output, .readout .val { font: 500 clamp(28px, 7.6vw, 40px)/1.1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.range-read { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.slwrap { --th: 34px; display: grid; gap: 2px; }
+.slider { position: relative; height: 52px; }
+.slider .track {
+  position: absolute; left: calc(var(--th) / 2); right: calc(var(--th) / 2); top: 50%; height: 12px; transform: translateY(-50%);
+  border: 2px solid var(--edge); border-radius: 6px; background: var(--paper);
+}
+.slider .fill {
+  position: absolute; top: 50%; height: 12px; transform: translateY(-50%);
+  left: calc(var(--th) / 2 + (100% - var(--th)) * var(--lo));
+  width: calc((100% - var(--th)) * (var(--hi) - var(--lo)));
+  background: var(--mark); border: 2px solid var(--edge); border-radius: 6px;
+}
+.slider input {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; background: transparent;
+  -webkit-appearance: none; appearance: none; pointer-events: none; touch-action: pan-y;
+}
+.slider.single input { pointer-events: auto; }
+.slider input::-webkit-slider-runnable-track { background: transparent; height: 52px; border: 0; }
+.slider input::-moz-range-track { background: transparent; height: 52px; border: 0; }
+.slider input::-webkit-slider-thumb {
+  -webkit-appearance: none; pointer-events: auto; width: 34px; height: 34px; margin-top: 9px; border-radius: 50%;
+  background: var(--pen); border: 3px solid var(--edge); box-shadow: 2px 2px 0 var(--edge); cursor: grab;
+}
+.slider input::-moz-range-thumb {
+  pointer-events: auto; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--pen); border: 3px solid var(--edge); box-shadow: 2px 2px 0 var(--edge); cursor: grab;
+}
+.slider input:focus-visible { outline: none; }
+.slider input:focus-visible::-webkit-slider-thumb { outline: 3px solid var(--mark); outline-offset: 2px; }
+.slider input:focus-visible::-moz-range-thumb { outline: 3px solid var(--mark); outline-offset: 2px; }
+.ticks { position: relative; height: 22px; font: 400 12px/1 var(--font-mono); color: var(--ink-soft); }
+.ticks span { position: absolute; top: 4px; transform: translateX(-50%); left: calc(var(--th) / 2 + (100% - var(--th)) * var(--p)); white-space: nowrap; }
+.ticks span::before { content: ''; position: absolute; left: 50%; top: -6px; height: 5px; border-left: 2px solid var(--edge); }
+
+/* retour apres reponse */
+.fb { border: 2px solid var(--edge); border-left-width: 10px; border-radius: 6px; padding: 16px 18px; display: grid; gap: 10px; background: var(--card); }
+.fb.good { border-left-color: var(--good); background: var(--good-bg); }
+.fb.warn { border-left-color: #E8A317; background: var(--warn-bg); }
+.fb.bad { border-left-color: var(--bad); background: var(--bad-bg); }
+.verdict { font: 800 clamp(26px, 6.6vw, 34px)/1.1 var(--font-display); letter-spacing: -0.01em; }
+.fb.good .verdict { color: var(--good); }
+.fb.warn .verdict { color: var(--warn); }
+.fb.bad .verdict { color: var(--bad); }
+.detail { text-wrap: pretty; }
+.gain { font: 500 clamp(28px, 8vw, 38px)/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.gain small { font-size: 14px; color: var(--ink-soft); letter-spacing: 0.06em; }
+.brk { font: 400 14px/1.5 var(--font-mono); color: var(--ink-soft); }
+
+/* introduction de bloc */
+.intro h2.mode-name { font: 800 clamp(40px, 11vw, 58px)/1 var(--font-display); letter-spacing: -0.02em; }
+.intro svg { width: 160px; max-width: 100%; height: auto; color: var(--ink); }
+.timed-note { padding: 12px 14px; background: var(--mark); color: var(--mark-ink); border: 2px solid var(--edge); border-radius: 6px; font-weight: 600; text-wrap: pretty; }
+
+/* fin de ronde */
+.final { display: grid; gap: 4px; }
+.final .score { font: 500 clamp(52px, 17vw, 88px)/1 var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.final .score small { font-size: 0.3em; letter-spacing: 0.08em; color: var(--ink-soft); }
+.badge { display: inline-block; justify-self: start; font: 700 14px var(--font-display); padding: 6px 10px; background: var(--mark); color: var(--mark-ink); border: 2px solid var(--edge); border-radius: 4px; transform: rotate(-1.5deg); }
+.ticket { border: 2px dashed var(--edge); border-radius: 6px; padding: 16px 18px; background: var(--card); display: grid; gap: 4px; }
+.ticket .who { font: 800 28px/1.15 var(--font-display); overflow-wrap: anywhere; }
+.ticket .line { color: var(--ink-soft); font-size: 15px; }
+.ticket .big { font: 500 22px var(--font-mono); margin-top: 6px; }
+.chart { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grp { display: grid; gap: 6px; min-width: 0; }
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 120px; border-bottom: 2px solid var(--edge); }
+.bar { flex: 1; border: 2px solid var(--edge); border-bottom: 0; border-radius: 3px 3px 0 0; min-height: 4px; background: var(--bad); }
+.bar.good { background: var(--good); }
+.bar.warn { background: #E8A317; }
+.bar.worst { outline: 3px solid var(--pen); outline-offset: 2px; }
+.cap { font-size: 13px; color: var(--ink-soft); text-align: center; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--ink-soft); }
+.legend i { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--edge); border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.worst-expr { font: 500 clamp(24px, 6.6vw, 36px)/1.2 var(--font-mono); overflow-wrap: anywhere; }
+.strategy { padding: 14px 16px; background: var(--hl); border: 2px solid var(--edge); border-radius: 6px; display: grid; gap: 6px; }
+.strategy .calc { font: 500 clamp(19px, 5.2vw, 26px)/1.3 var(--font-mono); overflow-wrap: anywhere; }
+.facts { display: grid; gap: 4px; }
+.facts .lab { color: var(--ink-soft); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+@media (max-width: 420px) {
+  .plan-row { grid-template-columns: 1fr; }
+  .plan-row .meta { grid-column: 1; }
+  .chart { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xp.pop { animation: none; }
+  .btn, .opt { transition: none; }
+}
+</style>
+
+<main id="app" class="shell"></main>
+
+<script>
+/* Estimo : moteur de questions et de pointage (sans interface) */
+(function (root) {
+  'use strict';
+
+  var SYM = { add: '+', sub: '−', mul: '×', div: '÷' };
+  var OP_DIFF = { add: 0, sub: 0.15, mul: 0.35, div: 0.5 };
+  var LVL_DIFF = [0, 0.25, 0.5];
+  var MODES = ['choose', 'interval', 'target'];
+  var TIME_LIMIT = 30; // secondes
+  var NB = ' ';
+
+  /* ---------- utilitaires ---------- */
+  function ri(lo, hi, rng) { return lo + Math.floor(rng() * (hi - lo + 1)); }
+  function shuffle(arr, rng) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function nd(n) { return String(Math.floor(Math.abs(n))).length; }
+  function fmt(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, NB); }
+  function roundSig(n, s) {
+    var d = nd(n);
+    if (d <= s) return Math.round(n);
+    var p = Math.pow(10, d - s);
+    return Math.round(n / p) * p;
+  }
+  function nonRound(lo, hi, rng) {
+    var n = ri(lo, hi, rng);
+    if (n % 10 === 0) n = (n + 3 <= hi) ? n + ri(1, Math.min(9, hi - n), rng) : n - ri(1, 9, rng);
+    return n;
+  }
+
+  /* ---------- contextes (tres courts, a la quebecoise) ---------- */
+  var CTX = {
+    add: [
+      [
+        'Léa vend {a} bouteilles d’eau le matin et {b} l’après-midi. Combien de bouteilles en tout?',
+        'À l’école, {a} élèves dînent à la cafétéria et {b} dînent en classe. Combien d’élèves en tout?',
+        'Sur la piste cyclable, {a} cyclistes passent le samedi et {b} le dimanche. Combien de cyclistes en tout?'
+      ],
+      [
+        'Au Centre Bell, {a} personnes assistent au match de vendredi et {b} à celui de samedi. Combien de personnes en tout?',
+        'Un site web reçoit {a} visites en septembre et {b} en octobre. Combien de visites en tout?',
+        'Une famille roule {a} km en juillet et {b} km en août. Combien de km en tout?'
+      ],
+      [
+        'Une vidéo est vue {a} fois sur un site et {b} fois sur un autre. Combien de visionnements en tout?',
+        'Une ville compte {a} habitants et la ville voisine en compte {b}. Combien d’habitants en tout?',
+        'Une entreprise gagne {a} $ au premier semestre et {b} $ au deuxième. Combien gagne-t-elle en tout?'
+      ]
+    ],
+    sub: [
+      [
+        'Il y avait {a} élèves au gymnase. {b} sont retournés en classe. Combien d’élèves restent au gymnase?',
+        'Un livre compte {a} pages. Éli en a lu {b}. Combien de pages lui reste-t-il à lire?',
+        'Mia a {a} $ dans son compte. Elle dépense {b} $. Combien lui reste-t-il?'
+      ],
+      [
+        'Une voiture d’occasion coûte {a} $. Jérémie a déjà {b} $. Combien lui manque-t-il?',
+        'Un trajet est de {a} km. Léo en a déjà fait {b}. Combien de km reste-t-il?',
+        'Une page compte {a} abonnés. {b} se désabonnent. Combien d’abonnés reste-t-il?'
+      ],
+      [
+        'Une ville comptait {a} habitants. Elle en a perdu {b}. Combien d’habitants reste-t-il?',
+        'Un budget est de {a} $. Après des dépenses de {b} $, combien reste-t-il?',
+        'Un jeu vidéo a été téléchargé {a} fois, dont {b} fois en Europe. Combien de téléchargements ailleurs?'
+      ]
+    ],
+    mul: [
+      [
+        'Une boîte contient {a} crayons. Combien de crayons dans {b} boîtes?',
+        'Un jardin a {a} rangées de {b} carottes. Combien de carottes en tout?',
+        'Un paquet contient {a} cartes. Combien de cartes dans {b} paquets?'
+      ],
+      [
+        'Un camion livre {a} caisses par jour pendant {b} jours. Combien de caisses en tout?',
+        'Une usine fabrique {a} jouets par jour. Combien de jouets en {b} jours?',
+        'Un employé gagne {a} $ par semaine. Combien gagne-t-il en {b} semaines?'
+      ],
+      [
+        'Une boulangerie vend {a} pains par jour. Combien de pains en {b} jours?',
+        'Un camion transporte {a} kg par voyage. Combien de kg après {b} voyages?',
+        'Une machine imprime {a} feuilles à l’heure. Combien de feuilles en {b} heures?'
+      ]
+    ],
+    div: [
+      [
+        'On partage {a} bonbons entre {b} enfants. Environ combien de bonbons chacun reçoit-il?',
+        '{a} élèves vont en sortie. Chaque autobus transporte {b} élèves. Environ combien d’autobus faut-il?',
+        'Une usine remplit {a} boîtes en {b} minutes. Environ combien de boîtes par minute?'
+      ],
+      [
+        'Une usine produit {a} pièces en {b} jours. Environ combien de pièces par jour?',
+        'On partage {a} $ également entre {b} personnes. Environ combien chaque personne reçoit-elle?',
+        'Un avion parcourt {a} km en {b} heures. Environ quelle est sa vitesse en km/h?'
+      ],
+      [
+        'On doit imprimer {a} pages. L’imprimante fait {b} pages à l’heure. Environ combien d’heures?',
+        'Un parc attire {a} visiteurs en {b} jours. Environ combien de visiteurs par jour?',
+        'Un réservoir contient {a} litres. Une pompe en vide {b} litres à l’heure. Environ combien d’heures pour le vider?'
+      ]
+    ]
+  };
+
+  function bucketOf(op, lvl, a, b) {
+    if (op === 'add' || op === 'sub') {
+      var d = nd(Math.max(a, b));
+      return d <= 3 ? 0 : d === 4 ? 1 : 2;
+    }
+    return lvl;
+  }
+
+  /* ---------- nombres ---------- */
+  function genNumbers(op, lvl, rng) {
+    var a, b, q, rem;
+    if (op === 'add') {
+      var r = [[100, 999], [1000, 9999], [10000, 499999]][lvl];
+      a = nonRound(r[0], r[1], rng); b = nonRound(r[0], r[1], rng);
+      return { a: a, b: b, ans: a + b };
+    }
+    if (op === 'sub') {
+      var s = [[200, 999], [2000, 9999], [20000, 999999]][lvl];
+      a = nonRound(s[0], s[1], rng);
+      b = nonRound(Math.ceil(a * 0.15), Math.floor(a * 0.75), rng);
+      return { a: a, b: b, ans: a - b };
+    }
+    if (op === 'mul') {
+      if (lvl === 0) { a = nonRound(12, 99, rng); b = nonRound(12, 99, rng); }
+      else if (lvl === 1) { a = nonRound(101, 999, rng); b = nonRound(12, 99, rng); }
+      else { a = nonRound(101, 999, rng); b = nonRound(101, 999, rng); }
+      return { a: a, b: b, ans: a * b };
+    }
+    // division (non exacte)
+    if (lvl === 0) { b = nonRound(11, 49, rng); q = ri(12, 99, rng); }
+    else if (lvl === 1) { b = nonRound(12, 99, rng); q = ri(100, 999, rng); }
+    else { b = nonRound(101, 999, rng); q = ri(100, 999, rng); }
+    rem = ri(1, b - 1, rng);
+    a = b * q + rem;
+    return { a: a, b: b, ans: a / b };
+  }
+
+  /* ---------- fenetre des curseurs ---------- */
+  function niceStepLE(x) {
+    if (x < 1) return 1;
+    var e = Math.floor(Math.log10(x)), base = Math.pow(10, e), f = x / base;
+    var m = f >= 5 ? 5 : f >= 2 ? 2 : 1;
+    return Math.max(1, m * base);
+  }
+  function makeWindow(T, rng) {
+    var step = niceStepLE(T * 0.13);
+    var N = ri(28, 48, rng);
+    var ti = Math.round((0.15 + 0.7 * rng()) * N);
+    var A = Math.max(0, Math.round(T / step) * step - ti * step);
+    return { A: A, step: step, N: N };
+  }
+
+  /* ---------- choix multiples ---------- */
+  function makeOptions(T, rng) {
+    var r2 = function (x) { return roundSig(Math.max(1, x), 2); };
+    var correct = r2(T);
+    var canDown = T >= 50;
+    for (var attempt = 0; attempt < 300; attempt++) {
+      // rang visé de la bonne réponse, uniforme (pas de position favorite)
+      var rank = ri(0, 3, rng);
+      if (rank === 3 && !canDown) rank = ri(0, 2, rng);
+      var nLow = rank, nHigh = 3 - rank;
+      var magDown = nLow > 0 && canDown && (nHigh === 0 || rng() < 0.5);
+      var factors = [];
+      var lowPool = shuffle([0.5, 0.7], rng), highPool = shuffle([1.4, 1.5, 2, 3], rng);
+      if (nLow > 0) {
+        if (magDown) { factors.push(0.1); factors = factors.concat(lowPool.slice(0, nLow - 1)); }
+        else factors = factors.concat(lowPool.slice(0, nLow));
+      }
+      if (nHigh > 0) {
+        if (!magDown) { factors.push(10); factors = factors.concat(highPool.slice(0, nHigh - 1)); }
+        else factors = factors.concat(highPool.slice(0, nHigh));
+      }
+      if (factors.length !== 3) continue;
+      var cands = factors.map(function (f) { return r2(T * f); });
+      var all = cands.concat([correct]);
+      var ok = true;
+      for (var i = 0; i < cands.length; i++) {
+        if (Math.abs(cands[i] - T) / T < 0.28) ok = false;
+      }
+      for (var x = 0; x < all.length && ok; x++) {
+        for (var y = x + 1; y < all.length; y++) {
+          var hi = Math.max(all[x], all[y]), lo = Math.min(all[x], all[y]);
+          if (hi / lo < 1.25) { ok = false; break; }
+        }
+      }
+      if (ok) return { options: all.sort(function (p, q) { return p - q; }), correct: correct };
+    }
+    var fb = [correct, r2(T * 10), r2(T * 2), r2(T * 0.5)];
+    return { options: fb.sort(function (p, q) { return p - q; }), correct: correct };
+  }
+
+  /* ---------- strategie d'arrondi ---------- */
+  // 1, 2, 3 = chiffres significatifs ; 'h' = multiples de 5 (15, 25, 150...)
+  var SPEC_W = { 1: 1, h: 1.5, 2: 2, 3: 3 };
+  var PAIRS = [];
+  [1, 'h', 2, 3].forEach(function (x) { [1, 'h', 2, 3].forEach(function (y) { PAIRS.push([x, y]); }); });
+  PAIRS.sort(function (p, q) { return (SPEC_W[p[0]] + SPEC_W[p[1]]) - (SPEC_W[q[0]] + SPEC_W[q[1]]); });
+
+  function rnd(n, spec) {
+    if (spec !== 'h') return roundSig(n, spec);
+    var d = nd(n);
+    if (d < 2) return Math.round(n);
+    var p = 5 * Math.pow(10, d - 2);
+    return Math.round(n / p) * p;
+  }
+
+  function hintFor(op, a, b, ans) {
+    var best = null;
+    for (var i = 0; i < PAIRS.length; i++) {
+      var s1 = PAIRS[i][0], s2 = PAIRS[i][1], h, err;
+      if (op !== 'div') {
+        var ra = rnd(a, s1), rb = rnd(b, s2);
+        if (ra === a && rb === b) continue;
+        var res = op === 'add' ? ra + rb : op === 'sub' ? ra - rb : ra * rb;
+        h = { ra: ra, rb: rb, res: res };
+      } else {
+        var rB = rnd(b, s1);
+        var rQ = rnd(a / rB, s2);
+        if (rB === b && rQ * rB === a) continue;
+        h = { ra: rQ * rB, rb: rB, res: rQ };
+      }
+      err = Math.abs(h.res - ans) / ans;
+      h.err = err;
+      if (!best || err < best.err) best = h;
+      if (err <= 0.10) return h;
+    }
+    return best;
+  }
+
+  var TIPS = {
+    add: 'Arrondis chaque nombre à son premier chiffre, puis additionne les gros morceaux.',
+    sub: 'Arrondis les deux nombres, puis soustrais. Vérifie que le résultat a un ordre de grandeur raisonnable.',
+    mul: 'Multiplie les chiffres qui ne sont pas des zéros, puis ajoute tous les zéros.',
+    div: 'Choisis un diviseur rond, puis un dividende compatible : un nombre proche du tien qui se divise facilement.'
+  };
+
+  /* ---------- fabrication d'une question ---------- */
+  function difficultyMult(op, lvl) {
+    return Math.round((1 + 0.5 * (OP_DIFF[op] + LVL_DIFF[lvl])) * 100) / 100;
+  }
+
+  function makeQuestion(k, op, lvl, mode, withCtx, rng) {
+    var timed = k >= 9;
+    var n = genNumbers(op, lvl, rng);
+    var q = {
+      id: k, mode: mode, timed: timed, op: op, lvl: lvl,
+      a: n.a, b: n.b, ans: n.ans, ctx: withCtx,
+      sym: SYM[op], mult: difficultyMult(op, lvl)
+    };
+    q.max = Math.round((timed ? 200 : 100) * q.mult);
+    q.expr = fmt(q.a) + NB + SYM[op] + NB + fmt(q.b);
+    if (withCtx) {
+      var list = CTX[op][bucketOf(op, lvl, q.a, q.b)];
+      var tpl = list[ri(0, list.length - 1, rng)];
+      q.text = tpl.replace('{a}', '<b class="num">' + fmt(q.a) + '</b>').replace('{b}', '<b class="num">' + fmt(q.b) + '</b>');
+    } else {
+      q.text = null;
+    }
+    if (mode === 'choose') {
+      var o = makeOptions(q.ans, rng);
+      q.options = o.options; q.correct = o.correct;
+    } else {
+      q.win = makeWindow(q.ans, rng);
+    }
+    q.hint = hintFor(op, q.a, q.b, q.ans);
+    q.tip = TIPS[op];
+    return q;
+  }
+
+  function genRound(rng) {
+    rng = rng || Math.random;
+    var ops = shuffle(['add', 'sub', 'mul', 'div'], rng);
+    var qs = [];
+    for (var block = 0; block < 6; block++) {
+      var mode = MODES[block % 3];
+      var nCtx = ri(1, 2, rng);
+      var ctxIdx = shuffle([0, 1, 2], rng).slice(0, nCtx);
+      for (var j = 0; j < 3; j++) {
+        var k = block * 3 + j;
+        qs.push(makeQuestion(k, ops[k % 4], j, mode, ctxIdx.indexOf(j) !== -1, rng));
+      }
+    }
+    return qs;
+  }
+
+  /* ---------- pointage ---------- */
+  function tierFromErr(e) { return e <= 0.10 ? 1 : e <= 0.25 ? 0.6 : e <= 0.5 ? 0.25 : 0; }
+  function tierFromWidth(w) { return w <= 0.35 ? 1 : w <= 0.7 ? 0.6 : w <= 1.4 ? 0.25 : 0; }
+  function speedFrac(secs) {
+    var f = (TIME_LIMIT - secs) / (TIME_LIMIT - 3);
+    return Math.max(0, Math.min(1, f));
+  }
+
+  // answer: choose {pick}, target {val}, interval {lo, hi}, ou null si le temps est ecoule
+  function scoreQuestion(q, answer, secs) {
+    var r = { q: q, answer: answer, secs: secs, tierFrac: 0, err: null, kind: 'timeout', speed: 0, precisionPts: 0, speedPts: 0 };
+    var T = q.ans;
+    if (answer) {
+      if (q.mode === 'choose') {
+        r.err = Math.abs(answer.pick - T) / T;
+        if (answer.pick === q.correct) { r.tierFrac = 1; r.kind = 'right'; }
+        else {
+          var ratio = answer.pick / T;
+          r.kind = (ratio >= 5 || ratio <= 0.2) ? 'magnitude' : 'near';
+        }
+      } else if (q.mode === 'target') {
+        r.err = Math.abs(answer.val - T) / T;
+        r.dir = answer.val > T ? 'high' : 'low';
+        r.tierFrac = tierFromErr(r.err);
+        r.kind = r.tierFrac === 1 ? 'right' : r.tierFrac > 0 ? 'near' : 'far';
+      } else {
+        var inside = answer.lo <= T && T <= answer.hi;
+        r.width = (answer.hi - answer.lo) / T;
+        r.inside = inside;
+        if (inside) {
+          r.tierFrac = tierFromWidth(r.width);
+          r.kind = r.tierFrac === 1 ? 'right' : r.tierFrac > 0 ? 'wide' : 'tooWide';
+        } else {
+          r.kind = answer.hi < T ? 'missAbove' : 'missBelow';
+          r.err = answer.hi < T ? (T - answer.hi) / T : (answer.lo - T) / T;
+        }
+      }
+    }
+    if (q.timed && r.tierFrac > 0) r.speed = speedFrac(secs);
+    r.precisionPts = Math.round(100 * r.tierFrac);
+    r.speedPts = q.timed ? Math.round(100 * r.speed * r.tierFrac) : 0;
+    r.xp = Math.round((100 * r.tierFrac + (q.timed ? 100 * r.speed * r.tierFrac : 0)) * q.mult);
+    return r;
+  }
+
+  // question la plus faible : precision d'abord, puis ecart, puis vitesse
+  function worstOf(results) {
+    var best = null;
+    results.forEach(function (r) {
+      var errScore = r.err == null ? 9 : r.err;
+      var key = [r.tierFrac, -errScore, r.q.timed ? r.speed : 1];
+      if (!best) { best = { r: r, key: key }; return; }
+      for (var i = 0; i < key.length; i++) {
+        if (key[i] < best.key[i]) { best = { r: r, key: key }; return; }
+        if (key[i] > best.key[i]) return;
+      }
+    });
+    return best ? best.r : null;
+  }
+
+  function modeTip(r) {
+    switch (r.kind) {
+      case 'timeout': return 'Quand le chrono tourne, arrondis dès la première seconde. Une estimation rapide vaut mieux que zéro.';
+      case 'magnitude': return 'Avant de regarder les choix, devine le nombre de chiffres de la réponse. Les zéros de trop ou en moins sont le piège le plus courant.';
+      case 'missAbove': case 'missBelow': return 'Ta plage ratait la réponse. Commence par ton estimation, puis ajoute environ 10 % de chaque côté.';
+      case 'tooWide': case 'wide': return 'Ta plage était trop large. Une fois ton estimation faite, resserre autour d’elle : environ 10 % de chaque côté suffit.';
+      case 'far': case 'near':
+        return r.q.mode === 'target' ? 'Place d’abord ton curseur au bon ordre de grandeur, puis ajuste avec ton estimation arrondie.' : 'Utilise l’arrondi pour éliminer les choix qui ne sont pas du bon ordre de grandeur.';
+      default: return 'Ta précision était bonne. Pour gagner du temps, arrondis dès que tu lis la question.';
+    }
+  }
+
+  var E = {
+    SYM: SYM, MODES: MODES, TIME_LIMIT: TIME_LIMIT, NB: NB,
+    fmt: fmt, nd: nd, roundSig: roundSig, ri: ri, shuffle: shuffle,
+    genRound: genRound, scoreQuestion: scoreQuestion, worstOf: worstOf, modeTip: modeTip,
+    makeWindow: makeWindow, makeOptions: makeOptions, hintFor: hintFor, genNumbers: genNumbers,
+    tierFromErr: tierFromErr, tierFromWidth: tierFromWidth, speedFrac: speedFrac, difficultyMult: difficultyMult,
+    CTX: CTX
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = E;
+  else root.Estimo = E;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  var E = window.Estimo;
+  var fmt = E.fmt;
+  var app = document.getElementById('app');
+  document.documentElement.lang = 'fr';
+
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* stockage indisponible */ }
+    }
+  };
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function pct(x) { var p = Math.round(x * 100); return (p < 1 ? 'moins de 1' : String(p)) + ' %'; }
+  function multTxt(m) { return String(m).replace('.', ','); }
+
+  var MODE = {
+    choose: { name: 'Choisir', how: 'Quatre réponses sont proposées. Une seule est dans le mille. Touche-la.' },
+    interval: { name: 'Intervalle', how: 'Encadre la réponse avec deux curseurs. Plus ta plage est serrée, plus tu gagnes, mais la réponse doit s’y trouver.' },
+    target: { name: 'Ciblé', how: 'Un seul curseur. Place-le le plus près possible de la réponse.' }
+  };
+  var ICON = {
+    choose: '<svg viewBox="0 0 160 48" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="4" y="6" width="34" height="36" rx="4"/><rect x="44" y="6" width="34" height="36" rx="4" fill="var(--mark)"/><rect x="84" y="6" width="34" height="36" rx="4"/><rect x="124" y="6" width="34" height="36" rx="4"/></svg>',
+    interval: '<svg viewBox="0 0 160 48" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="6" y1="24" x2="154" y2="24" stroke-linecap="round"/><rect x="48" y="19" width="62" height="10" fill="var(--mark)"/><circle cx="48" cy="24" r="10" fill="var(--card)"/><circle cx="110" cy="24" r="10" fill="var(--card)"/></svg>',
+    target: '<svg viewBox="0 0 160 48" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="6" y1="24" x2="154" y2="24" stroke-linecap="round"/><circle cx="122" cy="24" r="15" stroke-dasharray="4 4" fill="var(--mark)"/><circle cx="84" cy="24" r="10" fill="var(--card)"/></svg>'
+  };
+
+  var S = {
+    screen: 'home', qs: [], results: [], i: 0, total: 0,
+    name: store.get('estimo.name') || '',
+    best: parseInt(store.get('estimo.best') || '0', 10) || 0,
+    prevBest: 0
+  };
+  var T = { raf: 0, t0: 0, locked: false };
+
+  /* ---------- barre du haut ---------- */
+  function tone(r) { return r.tierFrac === 1 ? 'good' : r.tierFrac > 0 ? 'warn' : 'bad'; }
+  function topHTML() {
+    var pips = '';
+    for (var k = 0; k < 18; k++) {
+      var cls = 'pip' + (k >= 9 ? ' timed' : '');
+      if (k < S.results.length) cls += ' ' + tone(S.results[k]);
+      else if (k === S.i) cls += ' cur';
+      pips += '<span class="' + cls + '"></span>';
+    }
+    return '<div class="top"><div class="top-row"><span class="logo">Estimo</span>' +
+      '<span class="xp" id="xp" aria-label="Score">' + fmt(S.total) + ' <small>XP</small></span></div>' +
+      '<div class="pips" id="pips" role="img" aria-label="' + S.results.length + ' questions terminées sur 18">' + pips + '</div></div>';
+  }
+  function refreshTop(pop) {
+    var xp = document.getElementById('xp'), pips = document.getElementById('pips');
+    if (!xp || !pips) return;
+    xp.innerHTML = fmt(S.total) + ' <small>XP</small>';
+    if (pop) { xp.classList.remove('pop'); void xp.offsetWidth; xp.classList.add('pop'); }
+    var kids = pips.children;
+    for (var k = 0; k < 18; k++) {
+      var cls = 'pip' + (k >= 9 ? ' timed' : '');
+      if (k < S.results.length) cls += ' ' + tone(S.results[k]);
+      kids[k].className = cls;
+    }
+    pips.setAttribute('aria-label', S.results.length + ' questions terminées sur 18');
+  }
+
+  function setScreen(html, name) {
+    stopTimer();
+    S.screen = name;
+    app.innerHTML = html;
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- accueil ---------- */
+  function renderHome() {
+    var best = S.best > 0 ? 'Meilleur score : ' + fmt(S.best) + ' XP' : 'Aucun score enregistré pour l’instant.';
+    setScreen(
+      '<header class="hero"><h1 class="brand"><span class="hl">Estimo</span></h1>' +
+      '<p class="lede">Une ronde de 18 questions avant tes devoirs. Arrondis, estime, décide. Le calcul exact ne te rapporte rien de plus.</p></header>' +
+      '<section class="card"><h2>La ronde</h2><div class="plan">' +
+      '<div class="plan-row"><span class="tag">Entraînement</span><span>Choisir, Intervalle, Ciblé</span><span class="meta">3 questions de chaque, sans chrono</span></div>' +
+      '<div class="plan-row"><span class="tag">Défi</span><span>Choisir, Intervalle, Ciblé</span><span class="meta">3 questions de chaque, 30 secondes par question</span></div>' +
+      '</div></section>' +
+      '<section class="card"><h2>Comment gagner des XP</h2><ul class="rules">' +
+      '<li>À 10 % près de la vraie réponse, tu obtiens les points maximaux. Viser plus précis ne rapporte rien de plus.</li>' +
+      '<li>Au Défi, la vitesse ajoute un bonus. Temps écoulé : 0 XP.</li>' +
+      '<li>Les opérations plus difficiles valent plus de points, jusqu’à ×1,5.</li>' +
+      '</ul></section>' +
+      '<section class="card"><div class="field"><label for="name">Ton prénom</label>' +
+      '<input id="name" type="text" maxlength="30" autocomplete="given-name" value="' + esc(S.name) + '" placeholder="Pour ton écran de preuve"></div>' +
+      '<p class="best">' + best + '</p>' +
+      '<button id="start" class="btn primary big">Commencer la ronde</button></section>',
+      'home');
+    document.getElementById('start').onclick = function () {
+      S.name = document.getElementById('name').value.trim();
+      store.set('estimo.name', S.name);
+      startRound();
+    };
+  }
+
+  function startRound() {
+    S.qs = E.genRound();
+    S.results = []; S.i = 0; S.total = 0; S.prevBest = S.best;
+    renderIntro();
+  }
+
+  /* ---------- introduction d'un bloc ---------- */
+  function renderIntro() {
+    var q = S.qs[S.i], block = Math.floor(S.i / 3) + 1;
+    var m = MODE[q.mode];
+    setScreen(
+      topHTML() +
+      '<section class="card intro"><p class="eyebrow">Bloc ' + block + ' sur 6 · ' + (q.timed ? 'Défi' : 'Entraînement') + '</p>' +
+      '<h2 class="mode-name">' + m.name + '</h2>' + ICON[q.mode] +
+      '<p>' + m.how + '</p>' +
+      (q.timed ? '<p class="timed-note">Défi : 30 secondes par question. Le chrono démarre dès que la question apparaît. Plus tu réponds vite, plus le bonus est gros. Temps écoulé : 0 XP.</p>' : '') +
+      '<button id="go" class="btn primary big">Je suis prêt</button></section>',
+      'intro');
+    document.getElementById('go').focus();
+    document.getElementById('go').onclick = renderQuestion;
+  }
+
+  /* ---------- chrono ---------- */
+  function stopTimer() { if (T.raf) cancelAnimationFrame(T.raf); T.raf = 0; }
+  function startTimer() {
+    var limit = E.TIME_LIMIT * 1000;
+    var box = document.getElementById('timer'), fill = document.getElementById('tfill'), secs = document.getElementById('tsecs');
+    function tick() {
+      var left = Math.max(0, limit - (performance.now() - T.t0));
+      fill.style.width = (left / limit * 100) + '%';
+      var s = Math.ceil(left / 1000);
+      secs.textContent = s + ' s';
+      if (left < 6000) box.classList.add('low');
+      if (left <= 0) { timeUp(); return; }
+      T.raf = requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  /* ---------- curseurs ---------- */
+  function ticksHTML(w) {
+    var out = '';
+    for (var k = 0; k <= 4; k++) {
+      var idx = Math.round(w.N * k / 4);
+      out += '<span style="--p:' + (idx / w.N) + '">' + fmt(w.A + idx * w.step) + '</span>';
+    }
+    return '<div class="ticks" aria-hidden="true">' + out + '</div>';
+  }
+
+  /* ---------- question ---------- */
+  function renderQuestion() {
+    var q = S.qs[S.i];
+    var body = q.ctx
+      ? '<p class="eyebrow">Estime la réponse</p><p class="ctx">' + q.text + '</p>'
+      : '<p class="eyebrow">Estime le résultat</p><p class="expr">' + q.expr + '</p>';
+    var timer = q.timed
+      ? '<div class="timer" id="timer"><div class="bar"><div class="fill" id="tfill"></div></div><span class="secs" id="tsecs">30 s</span></div>'
+      : '';
+    var ansHTML = '';
+    if (q.mode === 'choose') {
+      ansHTML = '<div class="opts">' + q.options.map(function (v, k) {
+        return '<button class="opt" data-v="' + v + '"><span class="k">' + (k + 1) + '</span>' + fmt(v) + '</button>';
+      }).join('') + '</div><p class="hint">Touche la réponse la plus proche, sans calculer.</p>';
+    } else if (q.mode === 'target') {
+      ansHTML =
+        '<div class="readout"><span class="lab">Ton estimation</span><output id="v1" for="r1">' + fmt(q.win.A) + '</output></div>' +
+        '<div class="slwrap"><div class="slider single" id="sl" style="--lo:0;--hi:0"><div class="track"></div><div class="fill"></div>' +
+        '<input id="r1" type="range" min="0" max="' + q.win.N + '" step="1" value="0" aria-label="Ton estimation"></div>' + ticksHTML(q.win) + '</div>' +
+        '<button id="ok" class="btn primary big">Valider</button>';
+    } else {
+      ansHTML =
+        '<div class="readout"><div class="range-read"><span class="lab">de</span><output id="v1" for="r1" class="val"></output><span class="lab">à</span><output id="v2" for="r2" class="val"></output></div></div>' +
+        '<div class="slwrap"><div class="slider" id="sl"><div class="track"></div><div class="fill"></div>' +
+        '<input id="r1" type="range" min="0" max="' + q.win.N + '" step="1" value="0" aria-label="Début de ta plage">' +
+        '<input id="r2" type="range" min="0" max="' + q.win.N + '" step="1" value="0" aria-label="Fin de ta plage"></div>' + ticksHTML(q.win) + '</div>' +
+        '<button id="ok" class="btn primary big">Valider</button>';
+    }
+    setScreen(
+      topHTML() +
+      '<div class="meta-row"><span class="chip">' + MODE[q.mode].name + '</span>' + (q.timed ? '<span class="chip timed">Défi</span>' : '') +
+      '<span class="count">Question ' + (S.i % 3 + 1) + ' sur 3 de ce bloc</span></div>' +
+      timer +
+      '<section class="card q">' + body + '</section>' +
+      '<section class="ans" id="ans" aria-live="polite">' + ansHTML + '</section>',
+      'q');
+    T.locked = false;
+    wireAnswer(q);
+    T.t0 = performance.now();
+    if (q.timed) startTimer();
+  }
+
+  function wireAnswer(q) {
+    var w = q.win;
+    if (q.mode === 'choose') {
+      Array.prototype.forEach.call(document.querySelectorAll('.opt'), function (b) {
+        b.onclick = function () { answer({ pick: +b.getAttribute('data-v') }); };
+      });
+      return;
+    }
+    var sl = document.getElementById('sl'), r1 = document.getElementById('r1'), v1 = document.getElementById('v1');
+    var val = function (i) { return w.A + i * w.step; };
+    if (q.mode === 'target') {
+      var upT = function () {
+        var i = +r1.value;
+        v1.textContent = fmt(val(i));
+        r1.setAttribute('aria-valuetext', fmt(val(i)));
+        sl.style.setProperty('--hi', i / w.N);
+      };
+      r1.addEventListener('input', upT); upT();
+      document.getElementById('ok').onclick = function () { answer({ val: val(+r1.value) }); };
+    } else {
+      var r2 = document.getElementById('r2'), v2 = document.getElementById('v2');
+      r1.value = Math.round(w.N * 0.3); r2.value = Math.round(w.N * 0.7);
+      var upI = function (which) {
+        var lo = +r1.value, hi = +r2.value;
+        if (which === 'lo' && lo >= hi) { lo = hi - 1; if (lo < 0) { lo = 0; hi = 1; } }
+        if (which === 'hi' && hi <= lo) { hi = lo + 1; if (hi > w.N) { hi = w.N; lo = w.N - 1; } }
+        r1.value = lo; r2.value = hi;
+        v1.textContent = fmt(val(lo)); v2.textContent = fmt(val(hi));
+        r1.setAttribute('aria-valuetext', fmt(val(lo))); r2.setAttribute('aria-valuetext', fmt(val(hi)));
+        sl.style.setProperty('--lo', lo / w.N); sl.style.setProperty('--hi', hi / w.N);
+        r1.style.zIndex = lo > w.N / 2 ? 3 : 1; r2.style.zIndex = 2;
+      };
+      r1.addEventListener('input', function () { upI('lo'); });
+      r2.addEventListener('input', function () { upI('hi'); });
+      upI('');
+      document.getElementById('ok').onclick = function () { answer({ lo: val(+r1.value), hi: val(+r2.value) }); };
+    }
+  }
+
+  function answer(a) {
+    if (T.locked) return;
+    T.locked = true; stopTimer();
+    var q = S.qs[S.i];
+    var secs = (performance.now() - T.t0) / 1000;
+    finishQuestion(E.scoreQuestion(q, a, secs));
+  }
+  function timeUp() {
+    if (T.locked) return;
+    T.locked = true; stopTimer();
+    finishQuestion(E.scoreQuestion(S.qs[S.i], null, E.TIME_LIMIT));
+  }
+
+  /* ---------- retour apres la question ---------- */
+  function feedbackFor(r) {
+    var dir = r.dir === 'high' ? 'haut' : 'bas';
+    switch (r.kind) {
+      case 'timeout': return { t: 'bad', v: 'Temps écoulé', d: 'Pas de points pour cette question. Arrondis plus vite la prochaine fois.' };
+      case 'magnitude': return { t: 'bad', v: 'Mauvais ordre de grandeur', d: 'Avant de choisir, compte combien de chiffres la réponse devrait avoir.' };
+      case 'near': case 'far':
+        if (r.q.mode === 'choose') return { t: 'bad', v: 'Pas la bonne réponse', d: 'Ce choix n’était pas assez proche.' };
+        var tt = r.tierFrac > 0 ? 'warn' : 'bad';
+        var vv = r.tierFrac === 0.6 ? 'Pas mal' : r.tierFrac === 0.25 ? 'Plutôt loin' : 'Très loin';
+        return { t: tt, v: vv, d: pct(r.err) + ' trop ' + dir + '.' };
+      case 'right':
+        if (r.q.mode === 'choose') return { t: 'good', v: 'Dans le mille', d: 'C’est la bonne réponse.' };
+        if (r.q.mode === 'interval') return { t: 'good', v: 'Plage serrée et juste', d: 'La réponse est dans ta plage, et elle est assez étroite.' };
+        return { t: 'good', v: 'Excellent', d: r.err < 0.005 ? 'Pile sur la réponse.' : 'À ' + pct(r.err) + ' près, ' + (r.dir === 'high' ? 'un peu trop haut.' : 'un peu trop bas.') };
+      case 'wide': return { t: 'warn', v: 'Juste, mais large', d: 'La réponse est dans ta plage. Resserre-la pour gagner plus.' };
+      case 'tooWide': return { t: 'bad', v: 'Beaucoup trop large', d: 'La réponse est dans ta plage, mais elle est si large qu’elle ne rapporte rien.' };
+      case 'missAbove': return { t: 'bad', v: 'Réponse ratée', d: 'La bonne réponse était plus haute que ta plage.' };
+      case 'missBelow': return { t: 'bad', v: 'Réponse ratée', d: 'La bonne réponse était plus basse que ta plage.' };
+    }
+    return { t: 'bad', v: '', d: '' };
+  }
+
+  function finishQuestion(r) {
+    S.results.push(r);
+    S.total += r.xp;
+    refreshTop(r.xp > 0);
+    var f = feedbackFor(r), q = r.q;
+    var brk = q.timed
+      ? 'Précision ' + r.precisionPts + ' + vitesse ' + r.speedPts + (q.mult !== 1 ? ' × ' + multTxt(q.mult) + ' (difficulté)' : '') + (r.kind !== 'timeout' ? ' · ' + r.secs.toFixed(1).replace('.', ',') + ' s' : '')
+      : 'Précision ' + r.precisionPts + (q.mult !== 1 ? ' × ' + multTxt(q.mult) + ' (difficulté)' : '');
+    var last = S.i === 17;
+    var label = last ? 'Voir mon résultat' : (S.i % 3 === 2 ? 'Bloc suivant' : 'Question suivante');
+    var ans = document.getElementById('ans');
+    ans.innerHTML =
+      '<div class="fb ' + f.t + '" role="status"><p class="verdict">' + f.v + '</p><p class="detail">' + f.d + '</p>' +
+      '<p class="gain">+' + fmt(r.xp) + ' <small>XP</small></p><p class="brk">' + brk + '</p></div>' +
+      '<button id="next" class="btn primary big">' + label + '</button>';
+    var next = document.getElementById('next');
+    next.focus({ preventScroll: true });
+    next.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    next.onclick = function () {
+      if (last) { renderEnd(); return; }
+      S.i++;
+      if (S.i % 3 === 0) renderIntro(); else renderQuestion();
+    };
+  }
+
+  /* ---------- fin de ronde ---------- */
+  function ansText(r) {
+    var a = r.answer;
+    if (!a) return 'Temps écoulé, pas de réponse.';
+    if (r.q.mode === 'choose') return 'Tu as choisi : ' + fmt(a.pick);
+    if (r.q.mode === 'target') return 'Ton estimation : ' + fmt(a.val);
+    return 'Ta plage : de ' + fmt(a.lo) + ' à ' + fmt(a.hi);
+  }
+  function exactText(q) {
+    if (q.op !== 'div') return fmt(q.ans);
+    return q.ans < 100 ? 'environ ' + q.ans.toFixed(1).replace('.', ',') : 'environ ' + fmt(q.ans);
+  }
+
+  function renderEnd() {
+    var total = S.total, maxTotal = S.qs.reduce(function (a, q) { return a + q.max; }, 0);
+    var newRecord = total > S.prevBest;
+    if (newRecord) { S.best = total; store.set('estimo.best', String(total)); }
+    var worst = E.worstOf(S.results), wq = worst.q, h = wq.hint;
+    var d = new Date();
+    var dateTxt = d.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    var timeTxt = d.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+    var badge = newRecord ? (S.prevBest > 0 ? 'Nouveau record personnel' : 'Premier score enregistré') : 'Meilleur score : ' + fmt(S.best) + ' XP';
+
+    function bars(from, to) {
+      return S.results.slice(from, to).map(function (r) {
+        var cls = 'bar ' + tone(r) + (r === worst ? ' worst' : '');
+        var hgt = Math.max(3, Math.round(100 * r.xp / r.q.max));
+        var txt = MODE[r.q.mode].name + ' : ' + r.xp + ' XP sur ' + r.q.max;
+        return '<span class="' + cls + '" style="height:' + hgt + '%" title="' + txt + '" role="img" aria-label="' + txt + '"></span>';
+      }).join('');
+    }
+
+    var headline = worst.tierFrac < 1 ? 'Ta question la plus faible' : 'Presque parfait. Voici où tu as le plus lâché';
+    var qShow = wq.ctx ? '<p class="ctx">' + wq.text + '</p>' : '<p class="worst-expr">' + wq.expr + '</p>';
+    var errLine = h ? 'Cet arrondi donne ' + fmt(h.res) + ', à ' + pct(h.err) + ' de la vraie réponse.' : '';
+    var hintCalc = h ? wq.expr + ' ≈ ' + fmt(h.ra) + ' ' + wq.sym + ' ' + fmt(h.rb) + ' = ' + fmt(h.res) : '';
+
+    setScreen(
+      '<div class="top"><div class="top-row"><span class="logo">Estimo</span><span class="eyebrow">Ronde terminée</span></div></div>' +
+      '<section class="card final"><p class="eyebrow">Ton score</p><p class="score">' + fmt(total) + ' <small>XP</small></p>' +
+      '<p class="badge">' + badge + '</p><p class="hint">Maximum possible cette ronde : ' + fmt(maxTotal) + ' XP</p></section>' +
+      '<section class="ticket"><p class="eyebrow">Preuve de pratique</p><p class="who">' + esc(S.name || 'Élève') + '</p>' +
+      '<p class="line">' + esc(dateTxt) + ' · ' + esc(timeTxt) + '</p><p class="line">Ronde complète de 18 questions</p>' +
+      '<p class="big">' + fmt(total) + ' XP</p></section>' +
+      '<section class="card"><h2>Tes 18 questions</h2>' +
+      '<div class="chart"><div class="grp"><div class="bars">' + bars(0, 9) + '</div><p class="cap">Entraînement</p></div>' +
+      '<div class="grp"><div class="bars">' + bars(9, 18) + '</div><p class="cap">Défi, 30 s</p></div></div>' +
+      '<div class="legend"><span><i style="background:var(--good)"></i>Dans le mille</span><span><i style="background:#E8A317"></i>Partiel</span><span><i style="background:var(--bad)"></i>Raté</span></div>' +
+      '<p class="hint">La hauteur d’une barre = les points gagnés sur les points possibles de la question. Contour bleu : la plus faible.</p></section>' +
+      '<section class="card"><p class="eyebrow">' + headline + '</p>' + qShow +
+      '<div class="facts"><p>' + esc(ansText(worst)) + '</p><p>Réponse exacte : <b class="num">' + exactText(wq) + '</b></p></div>' +
+      '<div class="strategy"><p class="eyebrow">Stratégie</p>' + (h ? '<p class="calc">' + hintCalc + '</p><p>' + errLine + '</p>' : '') +
+      '<p>' + wq.tip + '</p><p>' + E.modeTip(worst) + '</p></div></section>' +
+      '<div class="actions"><button id="again" class="btn primary big">Rejouer une ronde</button><button id="home" class="btn ghost">Retour à l’accueil</button></div>',
+      'end');
+    document.getElementById('again').onclick = startRound;
+    document.getElementById('home').onclick = renderHome;
+  }
+
+  /* ---------- clavier ---------- */
+  document.addEventListener('keydown', function (e) {
+    if (S.screen !== 'q' || T.locked) return;
+    var q = S.qs[S.i];
+    if (q.mode === 'choose' && /^[1-4]$/.test(e.key)) {
+      var b = document.querySelectorAll('.opt')[+e.key - 1];
+      if (b) { e.preventDefault(); b.click(); }
+    } else if (q.mode !== 'choose' && e.key === 'Enter' && document.activeElement && document.activeElement.tagName !== 'BUTTON') {
+      var ok = document.getElementById('ok');
+      if (ok) { e.preventDefault(); ok.click(); }
+    }
+  });
+
+  renderHome();
+})();
+</script>
